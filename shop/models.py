@@ -3,8 +3,15 @@ from django.utils.text import slugify
 
 
 # Create your models here.
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class Category(models.Model):
+    class Meta:
+        abstract = True
+
+
+class Category(BaseModel):
     title = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(unique=True, blank=True)
 
@@ -18,7 +25,7 @@ class Category(models.Model):
         return self.title
 
 
-class Product(models.Model):
+class Product(BaseModel):
     class RatingChoices(models.IntegerChoices):
         zero = 0
         one = 1
@@ -60,10 +67,9 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Comment(models.Model):
+class Comment(BaseModel):
     name = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField()
     body = models.TextField()
     is_possible = models.BooleanField(default=False)
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='comments')
-    created_at = models.DateTimeField(auto_now_add=True)
